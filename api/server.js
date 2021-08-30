@@ -53,24 +53,25 @@ server.get('/', (req, res) => {
       })
   })
 
-  server.put('/api/users/:id', async (req, res) => {
-    const { id } = req.params
+  
+  server.put('/api/users/:id', async (req,res)=> {
+    const {id} = req.params
     const changes = req.body
-    console.log(id, changes)
-    try {
-        const result = await User.update(id, changes)
-        res.status(200).json(result)
-      } catch (err) {
-      if (!id) {
-        res.status(404).json( {message: "The user with the specified ID does not exist" })
-        } else if (!changes) {
-          res.status(400).json({ message: "Please provide name and bio for the user" })
-        }else{
-        res.status(500).json({ message: "The user information could not be modified" })
-      }
-    }
-  })
 
+    try{
+        const updatedUser = await User.update(id, changes)
+            if (!changes.name || !changes.bio) {
+                res.status(400).json({message: "Please provide name and bio for the user"})
+            } else if (!updatedUser){
+                res.status(404).json({message: "The user with the specified ID does not exist"})
+            }else {
+                res.status(200).json(updatedUser)
+            }
+        }
+    catch (err) {
+        res.status(500).json({message: err.message})
+    }
+})
 
   server.delete('/api/users/:id', (req, res) => {
     User.remove(req.params.id)
