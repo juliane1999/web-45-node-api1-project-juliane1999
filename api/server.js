@@ -10,11 +10,14 @@ server.get('/', (req, res) => {
 
   
   server.post('/api/users', (req, res) => {
-    User.update(req.params.id)
-      .then
-        res.status(400).json({message: "Please provide name and bio for the user"})
-    .then(user => {
-        res.status(201).json(user)
+      const newUser = req.body
+    User.insert(newUser)
+    .then(newUser => {
+        if (!newUser) {
+            res.status(400).json({ message: "Please provide name and bio for the user" })
+        } else {
+            res.status(201).json(newUser)
+        }
     })
     .catch(err => {
       console.log(err)
